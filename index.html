@@ -1,1 +1,276 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameZone Pro</title>
+<style>
+*{box-sizing:border-box}
+body{background:linear-gradient(135deg,#0f0f1e,#1a1a2e);color:#fff;font-family:Tahoma;text-align:center;padding:10px;margin:0;}
+h1{color:#e94560;text-shadow:0 0 15px #e94560;margin:10px 0;font-size:22px;}
+#coins{font-size:26px;color:#ffd700;margin:15px auto;padding:15px;background:#16213e;border-radius:12px;max-width:320px;border:3px solid #ffd700;font-weight:bold;}
+.wallet{display:flex;gap:8px;justify-content:center;margin:15px;flex-wrap:wrap;}
+.wallet button{font-size:13px;padding:10px 12px;border-radius:8px;}
+.wallet button.ad{background:#ff9800;}
+.wallet button.withdraw{background:#e94560;}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:600px;margin:20px auto;}
+.game{background:#0f3460;padding:18px;border-radius:15px;border:2px solid #e94560;cursor:pointer;transition:0.3s;font-weight:bold;}
+.game:hover{transform:scale(1.05);box-shadow:0 0 25px #e94560;}
+button{background:#e94560;color:#fff;border:none;padding:12px 20px;border-radius:8px;margin:5px;cursor:pointer;font-size:16px;font-weight:bold;}
+button:disabled{background:#555;cursor:not-allowed;}
+input{padding:10px;border-radius:8px;border:none;text-align:center;margin:8px;width:180px;font-size:16px;}
+#result{margin-top:15px;font-size:18px;color:#ffd700;min-height:30px;font-weight:bold;}
+#ludoBoard{display:grid;grid-template-columns:repeat(15,18px);gap:2px;justify-content:center;margin:10px auto;max-width:320px;}
+.cell{width:18px;height:18px;background:#16213e;border:1px solid #0f3460;font-size:10px;}
+.red{background:#e94560;}
+.player{border-radius:50%;width:16px;height:16px;margin:1px;background:#fff;border:2px solid #e94560;}
+.notice{background:#16213e;padding:12px;border-radius:8px;margin:15px auto;max-width:500px;font-size:12px;color:#aaa;border:1px solid #0f3460;}
+.withdraw-form{background:#1a1a2e;padding:15px;border-radius:10px;margin:15px auto;max-width:400px;border:2px solid #ffd700;}
+select{padding:10px;border-radius:8px;border:none;margin:5px;font-size:16px;}
+</style>
+</head>
+<body>
+<h1>🎮 GameZone Pro</h1>
 
+<div id="coins">💰 رصيدك: 100 عملة</div>
+
+<div class="wallet">
+<button onclick="deposit()">➕ إيداع +500</button>
+<button class="ad" onclick="watchAd()">📺 شاهد إعلان +50</button>
+<button class="withdraw" onclick="showWithdraw()">💸 طلب سحب</button>
+<button onclick="resetGame()">🔄 تصفير</button>
+</div>
+
+<div id="withdrawForm" class="withdraw-form" style="display:none;">
+<h3>💸 طلب سحب وهمي</h3>
+<p>الحد الأدنى: 5000 عملة</p>
+<select id="walletType">
+<option value="اورنج كاش">📱 أورانج كاش</option>
+<option value="فودافون كاش">📱 فودافون كاش</option>
+<option value="انستاباي">💳 انستاباي</option>
+</select>
+<input type="text" id="walletNumber" placeholder="رقم المحفظة 010...">
+<button onclick="requestWithdraw()">إرسال الطلب</button>
+<button onclick="hideWithdraw()" style="background:#555;">إلغاء</button>
+</div>
+
+<div class="games">
+<div class="game" onclick="showGame(1)">🧠 الذاكرة<br><small>+15 عملة</small></div>
+<div class="game" onclick="showGame(2)">🐦 فلابي كلام<br><small>+20 عملة</small></div>
+<div class="game" onclick="showGame(3)">✊ حجر ورقة<br><small>+10 عملة</small></div>
+<div class="game" onclick="showGame(4)">🎰 السلوتس<br><small>جاكبوت 200!</small></div>
+<div class="game" onclick="showGame(5)" style="grid-column:1/3;">🎲 ليدو<br><small>رمية بـ2 - مكسب 50!</small></div>
+</div>
+
+<div id="gameArea" style="margin-top:20px;"></div>
+<p id="result"></p>
+
+<div class="notice">
+⚠️ تنبيه: العملات وهمية. طلب السحب بيتسجل عندك بس. السحب الفعلي لأورانج/فودافون كاش لازم ترخيص + API بنكي قانوني.
+</div>
+
+<script>
+let coins = parseInt(localStorage.getItem('coins') || 100);
+let ludoPos = JSON.parse(localStorage.getItem('ludoPos') || '[0]');
+updateCoins();
+
+function updateCoins(){
+  document.getElementById('coins').innerText = '💰 رصيدك: ' + coins + ' عملة';
+  localStorage.setItem('coins', coins);
+}
+
+function deposit(){
+  coins += 500;
+  updateCoins();
+  showResult('تم الإيداع الوهمي +500 عملة ✅', true);
+}
+
+function watchAd(){
+  // هنا هتحط كود a-ads.com بعدين
+  // دلوقتي مكافأة وهمية عشان التجربة
+  coins += 50;
+  updateCoins();
+  showResult('شاهدت الإعلان +50 عملة ✅', true);
+}
+
+function showWithdraw(){
+  if(coins < 5000){
+    showResult('لازم 5000 عملة عشان تطلب سحب ❌', false);
+    return;
+  }
+  document.getElementById('withdrawForm').style.display = 'block';
+  document.getElementById('gameArea').innerHTML = '';
+}
+
+function hideWithdraw(){
+  document.getElementById('withdrawForm').style.display = 'none';
+}
+
+function requestWithdraw(){
+  let wallet = document.getElementById('walletType').value;
+  let number = document.getElementById('walletNumber').value.trim();
+
+  if(number.length < 11){
+    showResult('اكتب رقم المحفظة صح 010... ❌', false);
+    return;
+  }
+
+  let code = 'REQ' + Date.now().toString().slice(-6);
+  let history = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+  history.push({
+    code:code,
+    amount:coins,
+    wallet:wallet,
+    number:number,
+    date:new Date().toLocaleString('ar-EG'),
+    status:'قيد المراجعة'
+  });
+  localStorage.setItem('withdrawHistory', JSON.stringify(history));
+
+  showResult('تم إرسال طلب السحب! الكود: ' + code + ' راجع لوحة التحكم', true);
+  coins = 0;
+  updateCoins();
+  hideWithdraw();
+  document.getElementById('walletNumber').value = '';
+}
+
+function resetGame(){
+  if(confirm('هتصفر رصيدك وتبدأ من 100؟')){
+    coins = 100;
+    ludoPos = [0];
+    localStorage.clear();
+    updateCoins();
+    showResult('تم التصفير ✅', true);
+  }
+}
+
+function showGame(n){
+  hideWithdraw();
+  let area = document.getElementById('gameArea');
+  document.getElementById('result').innerText = '';
+
+  if(n==1){
+    let num = Math.floor(Math.random()*900+100);
+    area.innerHTML = `<h3>🧠 لعبة الذاكرة</h3>
+    <p>احفظ الرقم 3 ثواني:</p>
+    <p><span id="memNum" style="font-size:40px;color:#ffd700">${num}</span></p>
+    <input type="number" id="mem" placeholder="اكتب الرقم">
+    <button onclick="playMem(${num})">تأكيد +15</button>`;
+    setTimeout(()=>{document.getElementById('memNum').innerText='***';}, 3000);
+  }
+
+  if(n==2){
+    let q = ['عاصمة مصر؟','2+2=?','لون السماء؟','5*5=?'];
+    let a = ['القاهرة','4','ازرق','25'];
+    let r = Math.floor(Math.random()*4);
+    area.innerHTML = `<h3>🐦 فلابي كلام</h3>
+    <p style="font-size:20px">${q[r]}</p>
+    <input type="text" id="fly" placeholder="اكتب الإجابة">
+    <button onclick="playFly('${a[r]}')">طير +20</button>`;
+  }
+
+  if(n==3){
+    area.innerHTML = `<h3>✊ حجر ورقة مقص</h3>
+    <button onclick="playRPS('حجر')">✊ حجر</button>
+    <button onclick="playRPS('ورقة')">✋ ورقة</button>
+    <button onclick="playRPS('مقص')">✌️ مقص</button>`;
+  }
+
+  if(n==4){
+    area.innerHTML = `<h3>🎰 السلوتس - اللفة بـ5 عملة</h3>
+    <div id="slots" style="font-size:50px;margin:20px">🍎 🍊 🍇</div>
+    <button onclick="playSlot()">لف العجلة</button>`;
+  }
+
+  if(n==5){
+    area.innerHTML = `<h3>🎲 ليدو - انت الأحمر</h3>
+    <p>النرد: <span id="dice" style="font-size:45px">🎲</span></p>
+    <p>موقعك: <span style="color:#ffd700;font-size:22px">${ludoPos[0]}</span> / 52</p>
+    <button onclick="rollDice()">ارمي النرد -2 عملة</button>
+    <div id="ludoBoard"></div>`;
+    drawBoard();
+  }
+}
+
+function playMem(num){
+  let val = document.getElementById('mem').value;
+  if(val == num){
+    coins += 15;
+    updateCoins();
+    showResult('صح برافو! +15 عملة ✅', true);
+  } else {
+    showResult('غلط! الرقم كان ' + num + ' ❌', false);
+  }
+}
+
+function playFly(ans){
+  let val = document.getElementById('fly').value.trim();
+  if(val.toLowerCase() == ans.toLowerCase()){
+    coins += 20;
+    updateCoins();
+    showResult('صح! +20 عملة ✅', true);
+  } else {
+    showResult('غلط! الإجابة ' + ans + ' ❌', false);
+  }
+}
+
+function playRPS(user){
+  let comp = ['حجر','ورقة','مقص'][Math.floor(Math.random()*3)];
+  let msg = 'الكمبيوتر: ' + comp + ' ';
+  if(user == comp){
+    coins += 10;
+    updateCoins();
+    showResult(msg + '= تعادل! +10 عملة ✅', true);
+  } else if((user=='حجر'&&comp=='مقص')||(user=='ورقة'&&comp=='حجر')||(user=='مقص'&&comp=='ورقة')){
+    coins += 10;
+    updateCoins();
+    showResult(msg + '= كسبت! +10 عملة ✅', true);
+  } else {
+    showResult(msg + '= خسرت ❌', false);
+  }
+}
+
+function playSlot(){
+  if(coins < 5){
+    showResult('رصيدك أقل من 5 عملة ❌', false);
+    return;
+  }
+  coins -= 5;
+  let emojis = ['🍎','🍊','🍇','⭐','🔔'];
+  let s1 = emojis[Math.floor(Math.random()*5)];
+  let s2 = emojis[Math.floor(Math.random()*5)];
+  let s3 = emojis[Math.floor(Math.random()*5)];
+  document.getElementById('slots').innerText = s1 + ' + s2 + ' + s3;
+
+  if(s1==s2 && s2==s3){
+    coins += 200;
+    showResult('جاكبوت!!! +200 عملة 🔥🔥', true);
+  } else if(s1==s2 || s2==s3 || s1==s3){
+    coins += 15;
+    showResult('اتنين زي بعض +15 عملة ✅', true);
+  } else {
+    showResult('خسرت اللفة -5 ❌', false);
+  }
+  updateCoins();
+}
+
+function rollDice(){
+  if(coins < 2){
+    showResult('مفيش رصيد كفاية، أقل حاجة 2 عملة ❌', false);
+    return;
+  }
+  coins -= 2;
+  let dice = Math.floor(Math.random()*6)+1;
+  document.getElementById('dice').innerText = dice;
+
+  let p = ludoPos[0];
+  if(dice == 6 && p == 0) p = 1;
+  else if(p > 0) p += dice;
+  else if(dice == 6) p = 1;
+
+  if(p >= 52){
+    coins += 50;
+    ludoPos[0] = 0;
+    showResult('كسبت الجيم! +50 عملة 🔥🔥', true);
+  } else {
+    ludoPos[0] =
