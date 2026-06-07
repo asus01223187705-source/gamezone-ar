@@ -3,84 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GameZone</title>
+<title>GameZone Pro</title>
 <style>
-body{background:#0f0f1e;color:#fff;font-family:Tahoma;text-align:center;padding:10px;margin:0;}
-h1{color:#e94560;margin:10px 0;}
-#coins{font-size:24px;color:#ffd700;margin:15px;padding:12px;background:#16213e;border-radius:10px;border:2px solid #ffd700;}
-.wallet button{font-size:13px;padding:10px;margin:5px;border-radius:8px;background:#e94560;color:#fff;border:none;cursor:pointer;}
-.wallet button.ad{background:#ff9800;}
-.games{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:500px;margin:20px auto;}
-.game{background:#0f3460;padding:15px;border-radius:12px;border:2px solid #e94560;cursor:pointer;font-weight:bold;}
-button{background:#e94560;color:#fff;border:none;padding:10px 15px;border-radius:8px;margin:5px;cursor:pointer;font-size:15px;}
-input{padding:8px;border-radius:6px;border:none;text-align:center;margin:5px;width:160px;}
-#result{margin-top:15px;font-size:17px;color:#ffd700;min-height:30px;}
-#ludoBoard{display:grid;grid-template-columns:repeat(15,18px);gap:2px;justify-content:center;margin:10px auto;}
-.cell{width:18px;height:18px;background:#16213e;border:1px solid #0f3460;}
-.red{background:#e94560;}
-.player{width:14px;height:14px;margin:2px;background:#fff;border:2px solid #e94560;border-radius:50%;}
+*{box-sizing:border-box}
+body{background:linear-gradient(180deg,#0a0a1a,#1a1a2e);color:#fff;font-family:'Tahoma',sans-serif;text-align:center;padding:15px;margin:0;min-height:100vh;}
+h1{color:#ff3366;text-shadow:0 0 20px #ff3366;font-size:26px;margin:10px 0;}
+
+#coins{background:#1e1e3f;border:3px solid #ffd700;border-radius:15px;padding:18px;margin:20px auto;max-width:350px;font-size:28px;color:#ffd700;font-weight:bold;box-shadow:0 0 30px rgba(255,215,0,0.3);}
+
+.wallet{display:flex;gap:10px;justify-content:center;margin:20px;flex-wrap:wrap;}
+.wallet button{font-size:14px;padding:12px 18px;border-radius:12px;background:#ff3366;color:#fff;border:none;font-weight:bold;cursor:pointer;box-shadow:0 4px 15px rgba(255,51,102,0.4);transition:0.2s;}
+.wallet button:hover{transform:translateY(-2px);}
+.wallet button.ad{background:#ff9800;box-shadow:0 4px 15px rgba(255,152,0,0.4);}
+
+.games{display:grid;grid-template-columns:1fr 1fr;gap:15px;max-width:600px;margin:25px auto;}
+.game{background:linear-gradient(145deg,#1e3a5f,#0f3460);padding:25px 15px;border-radius:20px;border:3px solid #ff3366;cursor:pointer;transition:0.3s;font-weight:bold;font-size:18px;box-shadow:0 8px 25px rgba(255,51,102,0.2);}
+.game:hover{transform:scale(1.05);box-shadow:0 0 35px rgba(255,51,102,0.6);border-color:#ffd700;}
+.game small{display:block;margin-top:8px;font-size:14px;color:#ffd700;}
+
+#gameArea{margin-top:25px;min-height:200px;}
+#result{margin-top:20px;font-size:19px;color:#ffd700;min-height:35px;font-weight:bold;}
+button{background:#ff3366;color:#fff;border:none;padding:12px 25px;border-radius:10px;margin:8px;cursor:pointer;font-size:16px;font-weight:bold;box-shadow:0 4px 12px rgba(255,51,102,0.4);}
+input{padding:10px;border-radius:8px;border:2px solid #ff3366;text-align:center;margin:8px;width:180px;font-size:16px;background:#1e1e3f;color:#fff;}
+#ludoBoard{display:grid;grid-template-columns:repeat(15,20px);gap:3px;justify-content:center;margin:15px auto;max-width:350px;}
+.cell{width:20px;height:20px;background:#1e1e3f;border:1px solid #0f3460;border-radius:4px;}
+.red{background:#ff3366;}
+.player{width:16px;height:16px;margin:2px;background:#ffd700;border-radius:50%;border:2px solid #fff;}
 </style>
 </head>
 <body>
-<h1>🎮 GameZone</h1>
+<h1>GameZone Pro 🎮</h1>
+
 <div id="coins">💰 رصيدك: 100 عملة</div>
 
 <div class="wallet">
+<button class="ad" onclick="watchAd()">📺 شاهد إعلان +50</button>
 <button onclick="deposit()">➕ إيداع +500</button>
-<button class="ad" onclick="watchAd()">📺 إعلان +50</button>
 <button onclick="resetGame()">🔄 تصفير</button>
 </div>
 
 <div class="games">
-<div class="game" onclick="game1()">🧠 الذاكرة<br><small>+15</small></div>
-<div class="game" onclick="game2()">🐦 سؤال<br><small>+20</small></div>
-<div class="game" onclick="game3()">✊ حجر ورقة<br><small>+10</small></div>
-<div class="game" onclick="game4()">🎰 سلوتس<br><small>جاكبوت 200</small></div>
-<div class="game" onclick="game5()" style="grid-column:1/3;">🎲 ليدو<br><small>ارمي بـ2 - كسب 50</small></div>
+<div class="game" onclick="game1()">🧠 الذاكرة<br><small>+15 عملة</small></div>
+<div class="game" onclick="game2()">🐦 فلابي كلام<br><small>+20 عملة</small></div>
+<div class="game" onclick="game3()">✊ حجر ورقة<br><small>+10 عملة</small></div>
+<div class="game" onclick="game4()">🎰 السلوتس<br><small>جاكبوت 200!</small></div>
+<div class="game" onclick="game5()" style="grid-column:1/3;">🎲 ليدو<br><small>رمية بـ2 - مكسب 50!</small></div>
 </div>
 
 <div id="gameArea"></div>
 <p id="result"></p>
 
 <script>
-let coins = localStorage.coins ? parseInt(localStorage.coins) : 100;
-let ludoPos = localStorage.ludo ? JSON.parse(localStorage.ludo) : 0;
+let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 100;
+let ludoPos = localStorage.getItem('ludoPos') ? parseInt(localStorage.getItem('ludoPos')) : 0;
 updateCoins();
 
 function updateCoins(){
-  document.getElementById('coins').innerText = '💰 رصيدك: ' + coins + ' عملة';
-  localStorage.coins = coins;
+  document.getElementById('coins').innerHTML = '💰 رصيدك: ' + coins + ' عملة';
+  localStorage.setItem('coins', coins);
 }
 
-function deposit(){coins += 500; updateCoins(); result('تم الإيداع +500 ✅', true)}
-function watchAd(){coins += 50; updateCoins(); result('شاهدت إعلان +50 ✅', true)}
-function resetGame(){if(confirm('تصفير؟')){coins=100;ludoPos=0;localStorage.clear();updateCoins();result('تم التصفير ✅', true)}}
-function result(msg, ok){let r=document.getElementById('result');r.innerText=msg;r.style.color=ok?'#2ecc71':'#e94560'}
-
-function game1(){
-  let num = Math.floor(Math.random()*900+100);
-  document.getElementById('gameArea').innerHTML = `<h3>🧠 احفظ الرقم</h3><p><span id="n" style="font-size:40px;color:#ffd700">${num}</span></p><input type="number" id="ans"><button onclick="check1(${num})">تأكيد</button>`;
-  setTimeout(()=>{document.getElementById('n').innerText='***'}, 3000);
-}
-function check1(num){if(document.getElementById('ans').value==num){coins+=15;updateCoins();result('صح! +15 ✅',true)}else{result('غلط! كان '+num+' ❌',false)}}
-
-function game2(){
-  let q=['عاصمة مصر؟','2+2=?','لون السماء؟'], a=['القاهرة','4','ازرق'], r=Math.floor(Math.random()*3);
-  document.getElementById('gameArea').innerHTML = `<h3>🐦 سؤال</h3><p style="font-size:20px">${q[r]}</p><input type="text" id="ans2"><button onclick="check2('${a[r]}')">إجابة</button>`;
-}
-function check2(ans){if(document.getElementById('ans2').value.toLowerCase()==ans.toLowerCase()){coins+=20;updateCoins();result('صح! +20 ✅',true)}else{result('غلط! '+ans+' ❌',false)}}
-
-function game3(){
-  document.getElementById('gameArea').innerHTML = `<h3>✊ حجر ورقة مقص</h3><button onclick="playRPS('حجر')">✊</button><button onclick="playRPS('ورقة')">✋</button><button onclick="playRPS('مقص')">✌️</button>`;
-}
-function playRPS(user){let comp=['حجر','ورقة','مقص'][Math.floor(Math.random()*3)];if(user==comp){coins+=10;updateCoins();result('تعادل! '+comp+' +10 ✅',true)}else if((user=='حجر'&&comp=='مقص')||(user=='ورقة'&&comp=='حجر')||(user=='مقص'&&comp=='ورقة')){coins+=10;updateCoins();result('كسبت! '+comp+' +10 ✅',true)}else{result('خسرت! '+comp+' ❌',false)}}
-
-function game4(){
-  if(coins<5){result('محتاج 5 عملة ❌',false);return}
-  coins-=5; let e=['🍎','🍊','🍇','⭐','🔔'], s1=e[Math.floor(Math.random()*5)], s2=e[Math.floor(Math.random()*5)], s3=e[Math.floor(Math.random()*5)];
-  document.getElementById('gameArea').innerHTML = `<h3>🎰 سلوتس -5</h3><p style="font-size:50px">${s1} ${s2} ${s3}</p><button onclick="game4()">لف تاني</button>`;
-  if(s1==s2&&s2==s3){coins+=200;result('جاكبوت 200 🔥🔥',true)}else if(s1==s2||s2==s3||s1==s3){coins+=15;result('اتنين زي بعض +15 ✅',true)}else{result('خسرت -5 ❌',false)}updateCoins()
-}
-
-function game5(){
-  document.getElementById('gameArea').innerHTML = `<h3>
+function deposit(){coins += 500; updateCoins(); showResult('تم الإيداع +500 ✅', true)}
+function watchAd(){coins += 50; updateCoins(); showResult('شاهدت إعلان +50 ✅', true)}
+function resetGame(){if(confirm('هتصفر رصيدك؟')){coins=100;ludoPos=0;localStorage.clear();updateCoins();showResult('تم التصفير ✅', true)}}
+function showResult(msg, ok){let r=document.getElementById('result');r.innerText=msg;r.style.color=ok?'#00
