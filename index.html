@@ -7,142 +7,203 @@
 <style>
   body {
     margin: 0;
-    background: #0a1428;
+    background: #0f172a;
     font-family: 'Cairo', sans-serif;
     color: white;
     text-align: center;
   }
-  .top-bar {
+  .top {
     display: flex;
     justify-content: space-between;
-    padding: 12px 20px;
-    background: #061020;
+    padding: 15px 20px;
   }
   .badge {
     background: #1e293b;
-    padding: 8px 18px;
-    border-radius: 25px;
+    padding: 8px 20px;
+    border-radius: 30px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 17px;
   }
-  h1 {
-    font-size: 60px;
+  
+  #start h1 {
+    font-size: 70px;
     color: #fbbf24;
-    text-shadow: 0 6px 20px #000;
-    margin: 50px 0 30px;
-    letter-spacing: 3px;
+    text-shadow: 0 0 30px rgba(251,191,36,0.5);
+    margin: 60px 0 40px;
+    font-weight: 900;
   }
+  
   .btn {
-    width: 85%;
-    max-width: 320px;
+    width: 88%;
+    max-width: 330px;
     margin: 12px auto;
-    padding: 16px;
-    background: #22c55e;
+    padding: 18px;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     color: white;
-    font-size: 22px;
+    font-size: 23px;
     font-weight: bold;
     cursor: pointer;
     display: block;
-    box-shadow: 0 4px 0 #16a34a;
   }
-  .btn.blue { background: #3b82f6; box-shadow: 0 4px 0 #2563eb; }
-  .btn.ads { background: #f59e0b; box-shadow: 0 4px 0 #d97706; font-size: 18px; }
-  
-  #game { display: none; padding: 10px; }
-  #turn { font-size: 22px; margin: 10px 0 15px; font-weight: bold; }
-  
-  .board-wrap {
-    width: 95vw;
-    max-width: 420px;
-    margin: 0 auto;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  .btn.green {
+    background: #10b981;
+    box-shadow: 0 6px 0 #059669, 0 10px 20px rgba(16,185,129,0.3);
   }
+  .btn.blue {
+    background: #3b82f6;
+    box-shadow: 0 6px 0 #2563eb, 0 10px 20px rgba(59,130,246,0.3);
+  }
+  .btn.orange {
+    background: #f97316;
+    box-shadow: 0 6px 0 #ea580c, 0 10px 20px rgba(249,115,22,0.3);
+    font-size: 19px;
+  }
+  
+  #game { display: none; }
+  #turn {
+    font-size: 24px;
+    margin: 20px 0;
+    font-weight: bold;
+  }
+  
+  .board {
+    width: 94vw;
+    max-width: 400px;
+    height: 94vw;
+    max-height: 400px;
+    margin: 0 auto 25px;
+    background: #e2e8f0;
+    border-radius: 18px;
+    padding: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+  }
+  
+  /* الرقعة - طبق الأصل من الصورة */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    gap: 2px;
+    height: 100%;
+  }
+  .cell {
+    background: #f8fafc;
+    border-radius: 3px;
+  }
+  .cell.red { background: #ef4444; }
+  .cell.blue { background: #3b82f6; }
+  .cell.green { background: #22c55e; }
+  .cell.yellow { background: #f59e0b; }
+  .cell.path { background: #cbd5e1; }
   
   #dice {
-    width: 85px;
-    height: 85px;
+    width: 90px;
+    height: 90px;
     background: white;
-    border-radius: 18px;
-    margin: 15px auto 8px;
+    border-radius: 20px;
+    margin: 0 auto 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
-    color: #1e293b;
-    font-weight: bold;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    font-size: 52px;
+    color: #0f172a;
+    font-weight: 900;
+    box-shadow: 0 8px 0 #cbd5e1;
   }
   
   #roll {
-    padding: 14px 45px;
-    background: #f59e0b;
+    padding: 16px 50px;
+    background: #f97316;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     color: white;
-    font-size: 20px;
+    font-size: 21px;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 6px 0 #ea580c;
   }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
+<div class="top">
   <div class="badge">💰 <span id="coins">266</span></div>
   <div class="badge">⭐ 72</div>
 </div>
 
 <div id="start">
   <h1>LUDO</h1>
-  <button class="btn" onclick="startGame()">2 اللاعبون</button>
-  <button class="btn" onclick="startGame()">4 اللاعبون</button>
+  <button class="btn green" onclick="startGame()">2 اللاعبون</button>
+  <button class="btn green" onclick="startGame()">4 اللاعبون</button>
   <button class="btn blue" onclick="startGame()">العب ضد الكمبيوتر</button>
-  <button class="btn ads" onclick="watchAd()">شاهد اعلان +100 عملة</button>
+  <button class="btn orange" onclick="watchAd()">شاهد اعلان +100 عملة</button>
 </div>
 
 <div id="game">
-  <p id="turn">دورك - الأحمر</p>
+  <div id="turn">دورك - الأحمر</div>
+  <div class="board">
+    <div class="grid" id="grid"></div>
+  </div>
+  <div id="dice">4</div>
+  <button id="roll" onclick="rollDice()">ارمي الزهر</button>
+</div>
+
+<script>
+let coins = 266;
+
+function startGame() {
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  drawGrid();
+}
+
+function drawGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
   
-  <div class="board-wrap">
-    <svg viewBox="0 0 420 420">
-      <!-- خلفية رمادي -->
-      <rect width="420" height="420" fill="#d1d5db" rx="20"/>
+  for(let row=0; row<15; row++) {
+    for(let col=0; col<15; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
       
-      <!-- البيوت 4 الوان بزوايا مدورة -->
-      <rect x="20" y="20" width="160" height="160" fill="#ef4444" rx="15"/>
-      <rect x="240" y="20" width="160" height="160" fill="#3b82f6" rx="15"/>
-      <rect x="20" y="240" width="160" height="160" fill="#eab308" rx="15"/>
-      <rect x="240" y="240" width="160" height="160" fill="#22c55e" rx="15"/>
+      // البيوت 4 الوان - 6x6
+      if(row<6 && col<6) cell.classList.add('red');
+      else if(row<6 && col>8) cell.classList.add('blue');
+      else if(row>8 && col<6) cell.classList.add('yellow');
+      else if(row>8 && col>8) cell.classList.add('green');
       
-      <!-- المسار الابيض 3 مربعات عرض -->
-      <g fill="white" stroke="#9ca3af" stroke-width="2">
-        <!-- المسار الأفقي -->
-        <rect x="180" y="20" width="60" height="160"/>
-        <rect x="180" y="240" width="60" height="160"/>
-        <!-- المسار الرأسي -->
-        <rect x="20" y="180" width="160" height="60"/>
-        <rect x="240" y="180" width="160" height="60"/>
-      </g>
+      // المسار الرمادي - 3 مربعات في النص
+      else if(col>=6 && col<=8 || row>=6 && row<=8) cell.classList.add('path');
       
-      <!-- المربعات البيضا بالخطوط -->
-      <g stroke="#d1d5db" stroke-width="1" fill="none">
-        <!-- خطوط المسار الرأسي -->
-        <line x1="200" y1="20" x2="200" y2="180"/>
-        <line x1="220" y1="20" x2="220" y2="180"/>
-        <line x1="200" y1="240" x2="200" y2="400"/>
-        <line x1="220" y1="240" x2="220" y2="400"/>
-        <!-- خطوط المسار الأفقي -->
-        <line x1="20" y1="200" x2="180" y2="200"/>
-        <line x1="20" y1="220" x2="180" y2="220"/>
-        <line x1="240" y1="200" x2="400" y2="200"/>
-        <line x1="240" y1="220" x2="400" y2="220"/>
-      </g>
+      // المربعات البيضا حوالين البيوت
+      else if((row==6 && col<6) || (row==8 && col>8) || (col==6 && row<6) || (col==8 && row>8)) {
+        cell.classList.add('cell');
+      }
       
-      <!-- المثلث النص 4 الوان -->
-      <polygon points="180,180 210,210 180,210" fill="#ef4444"/>
-      <polygon points="180,180 210,210 210,180" fill="#3b82f6"/>
-      <polygon points="240,180 210,210 
+      // قطعة حمرا في البيت
+      if(row==1 && col==1) {
+        cell.style.background = '#dc2626';
+        cell.style.borderRadius = '50%';
+        cell.style.border = '3px solid #7f1d1d';
+      }
+      
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function rollDice() {
+  document.getElementById('dice').innerText = Math.floor(Math.random() * 6) + 1;
+}
+
+function watchAd() {
+  window.open('https://exe.io/حط_رابطك', '_blank');
+  setTimeout(() => {
+    coins += 100;
+    document.getElementById('coins').innerText = coins;
+  }, 3000);
+}
+</script>
+</body>
+</html>
