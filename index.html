@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ludo Club - نسختك</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">⭐ <span id="stars">72</span></div>
+  <div class="badge">💰 <span id="coins">266</span></div>
+</div>
+
+<div id="startScreen" class="screen active">
+  <h1>LUDO</h1>
+  <button class="btn green" onclick="startGame('local')">2 اللاعبون</button>
+  <button class="btn green" onclick="startGame('local4')">4 اللاعبون</button>
+  <button class="btn blue" onclick="startGame('bot')">العب ضد الكمبيوتر</button>
+  
+  <button class="btn ads" onclick="watchAd()">شاهد اعلان +100 عملة</button>
+</div>
+
+<div id="gameScreen" class="screen">
+  <div class="turn">دورك - <span id="currentPlayer">الأحمر</span></div>
+  <canvas id="board" width="450" height="450"></canvas>
+  
+  <div id="dice" onclick="rollDice()">2</div>
+  <button id="rollBtn" onclick="rollDice()">ارمي الزهر</button>
+</div>
+
+<div id="winnerScreen" class="screen">
+  <div class="winner-box">
+    <h2>WINNER</h2>
+    <p>🏆 انت الفائز! 🏆</p>
+    <p>+500 عملة</p>
+    <button class="btn green" onclick="location.reload()">إعادة المباراة</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
