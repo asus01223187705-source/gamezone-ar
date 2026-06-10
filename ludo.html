@@ -3,264 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ludo Club نسخة مصغرة</title>
+<title>Ludo Club</title>
 <style>
-  body {
-    margin: 0;
-    background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
-    font-family: 'Cairo', sans-serif;
-    color: white;
-    text-align: center;
-    overflow-x: hidden;
-  }
-  
-  /* شاشة البداية */
-  #startScreen {
-    padding: 40px 20px;
-  }
-  #startScreen h1 {
-    font-size: 48px;
-    color: #fbbf24;
-    text-shadow: 0 4px 10px #000;
-    margin-bottom: 30px;
-  }
-  .mode-btn {
-    display: block;
-    width: 80%;
-    max-width: 300px;
-    margin: 15px auto;
-    padding: 15px;
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-    border: none;
-    border-radius: 15px;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  }
-  .mode-btn:active {
-    transform: scale(0.95);
-  }
+body {
+  margin: 0;
+  background: #1a233a;
+  font-family: 'Cairo', sans-serif;
+  color: white;
+  text-align: center;
+}
+#topBar {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #0f172a;
+}
+.coins {
+  background: #334155;
+  padding: 6px 18px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 16px;
+}
+h3 { margin: 15px 0; font-size: 20px; }
 
-  /* الرقعة */
-  #gameScreen { display: none; padding: 10px; }
-  .board {
-    width: 90vw;
-    max-width: 400px;
-    height: 90vw;
-    max-height: 400px;
-    margin: 20px auto;
-    background: #e2e8f0;
-    border: 8px solid #334155;
-    border-radius: 20px;
-    display: grid;
-    grid-template-columns: repeat(15, 1fr);
-    grid-template-rows: repeat(15, 1fr);
-    gap: 1px;
-  }
-  .cell {
-    background: white;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-  }
-  .green { background: #22c55e; }
-  .red { background: #ef4444; }
-  .blue { background: #3b82f6; }
-  .yellow { background: #fbbf24; }
-  .center { background: linear-gradient(45deg, red, yellow, green, blue); }
+.board {
+  width: 90vw;
+  max-width: 420px;
+  height: 90vw;
+  max-height: 420px;
+  margin: 20px auto;
+  background: #2d3748;
+  border: 10px solid #1a202c;
+  border-radius: 25px;
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  gap: 2px;
+  padding: 5px;
+}
+.cell {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+/* البيوت 4 الوان زي الصورة */
+.red-home { background: #e53e3e; }
+.blue-home { background: #3182ce; }
+.yellow-home { background: #d69e2e; }
+.green-home { background: #38a169; }
+.center { background: linear-gradient(135deg, #e53e3e 25%, #d69e2e 25% 50%, #38a169 50% 75%, #3182ce 75%); }
 
-  .piece {
-    width: 70%;
-    height: 70%;
-    border-radius: 50%;
-    border: 2px solid #000;
-    cursor: pointer;
-  }
-  .piece.red { background: #dc2626; }
-  .piece.blue { background: #2563eb; }
-  .piece.green { background: #16a34a; }
-  .piece.yellow { background: #eab308; }
+/* المسار */
+.path { background: white; border: 1px solid #cbd5e0; }
+.path.red { background: #fed7d7; }
+.path.blue { background: #bee3f8; }
+.path.yellow { background: #fefcbf; }
+.path.green { background: #c6f6d5; }
 
-  /* الزهر والتحكم */
-  #controls {
-    margin-top: 20px;
-  }
-  #dice {
-    width: 80px;
-    height: 80px;
-    background: white;
-    border-radius: 15px;
-    margin: 10px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    color: black;
-    font-weight: bold;
-    box-shadow: 0 5px 15px #000;
-    cursor: pointer;
-  }
-  #rollBtn {
-    padding: 12px 40px;
-    background: #f59e0b;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+/* القطعة */
+.piece {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  border: 3px solid #000;
+  margin: auto;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+.piece.red { background: radial-gradient(circle at 30% 30%, #fc8181, #e53e3e); }
+.piece.blue { background: radial-gradient(circle at 30% 30%, #63b3ed, #3182ce); }
+.piece.yellow { background: radial-gradient(circle at 30% 30%, #f6e05e, #d69e2e); }
+.piece.green { background: radial-gradient(circle at 30% 30%, #68d391, #38a169); }
 
-  /* شاشة الفائز WINNER */
-  #winnerScreen {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    z-index: 999;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
-  #winnerBox {
-    background: linear-gradient(180deg, #fbbf24, #f59e0b);
-    padding: 30px;
-    border-radius: 25px;
-    text-align: center;
-    color: #1e293b;
-    width: 80%;
-    max-width: 350px;
-  }
-  #winnerBox h2 {
-    font-size: 36px;
-    margin: 0;
-  }
-  #winnerBox button {
-    margin-top: 20px;
-    padding: 12px 30px;
-    background: #22c55e;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-  }
-
-  /* العملات فوق */
-  #topBar {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background: #0f172a;
-  }
-  .coins {
-    background: #334155;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-  }
+/* الزهر 3D */
+#dice {
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 18px;
+  margin: 15px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #1a202c;
+  font-weight: bold;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  border: 4px solid #e2e8f0;
+}
+#rollBtn {
+  padding: 14px 50px;
+  background: linear-gradient(90deg, #f6ad55, #ed8936);
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
 </style>
 </head>
 <body>
 
 <div id="topBar">
+  <div class="coins">⭐ <span>72</span></div>
   <div class="coins">💰 <span id="coins">266</span></div>
-  <div class="coins">⭐ 72</div>
 </div>
 
-<!-- شاشة البداية -->
-<div id="startScreen">
-  <h1>LUDO</h1>
-  <button class="mode-btn" onclick="startGame(2)">2 اللاعبون</button>
-  <button class="mode-btn" onclick="startGame(4)">4 اللاعبون</button>
-  <button class="mode-btn" style="background: linear-gradient(90deg, #3b82f6, #2563eb)">العب ضد الكمبيوتر</button>
-</div>
+<h3 id="turnText">دورك - الأحمر</h3>
+<div class="board" id="board"></div>
 
-<!-- شاشة اللعبة -->
-<div id="gameScreen">
-  <h3 id="turnText">دورك - الأحمر</h3>
-  <div class="board" id="board"></div>
-  
-  <div id="controls">
-    <div id="dice">🎲</div>
-    <button id="rollBtn" onclick="rollDice()">ارمي الزهر</button>
-  </div>
-</div>
-
-<!-- شاشة WINNER -->
-<div id="winnerScreen">
-  <div id="winnerBox">
-    <h2>WINNER</h2>
-    <p>🏆 انت الفائز! 🏆</p>
-    <p>كسبت 500 عملة + 3 قلوب</p>
-    <button onclick="location.reload()">إعادة المباراة</button>
-    <button onclick="location.reload()" style="background:#3b82f6">التالي</button>
-  </div>
-</div>
+<div id="dice">2</div>
+<button id="rollBtn" onclick="rollDice()">ارمي الزهر</button>
 
 <script>
-let diceValue = 0;
-let currentPlayer = 'red';
-let coins = 266;
-
-function startGame(players) {
-  document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('gameScreen').style.display = 'block';
-  createBoard();
-}
+const boardLayout = [
+  [1,1,1,1,1,1,0,0,0,2,2,2,2,2,2],
+  [1,1,1,1,1,1,0,0,0,2,2,2,2,2,2],
+  [1,1,1,1,1,1,0,0,0,2,2,2,2,2,2],
+  [1,1,1,1,1,1,0,0,0,2,2,2,2,2,2],
+  [1,1,1,1,1,1,0,0,0,2,2,2,2,2,2],
+  [1,1,1,1,1,1,0,0,0,2,2,2,2,2,2],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,4,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [3,3,3,3,3,3,0,0,0,4,4,4,4,4,4],
+  [3,3,3,3,3,3,0,0,0,4,4,4,4,4,4],
+  [3,3,3,3,3,3,0,0,0,4,4,4,4,4,4],
+  [3,3,3,3,3,3,0,0,0,4,4,4,4,4,4],
+  [3,3,3,3,3,3,0,0,0,4,4,4,4,4,4],
+  [3,3,3,3,3,3,0,0,0,4,4,4,4,4,4]
+];
 
 function createBoard() {
   const board = document.getElementById('board');
   board.innerHTML = '';
-  // رقعة مبسطة 15x15 - الألوان الأساسية
-  for(let i=0; i<225; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'cell';
-    // تلوين المناطق
-    if(i<36 && i%15<6) cell.classList.add('red');
-    if(i<90 && i>=144 && i%15>8) cell.classList.add('green');
-    if(i>189 && i%15<6) cell.classList.add('blue');
-    if(i>189 && i%15>8) cell.classList.add('yellow');
-    if(i==112) cell.classList.add('center');
-    
-    // حط القطع الحمرا في البداية
-    if([0,1,15,16].includes(i)) {
-      const p = document.createElement('div');
-      p.className = 'piece red';
-      cell.appendChild(p);
+
+  for(let i=0; i<15; i++) {
+    for(let j=0; j<15; j++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+
+      if(boardLayout[i][j] == 1) cell.classList.add('red-home');
+      if(boardLayout[i][j] == 2) cell.classList.add('blue-home');
+      if(boardLayout[i][j] == 3) cell.classList.add('yellow-home');
+      if(boardLayout[i][j] == 4) cell.classList.add('green-home');
+      if(i==7 && j==7) cell.classList.add('center');
+
+      // المسار
+      if((i==6 && j>=0 && j<=14) || (j==8 && i>=0 && i<=14) || (i==8 && j>=0 && j<=14) || (j==6 && i>=0 && i<=14)) {
+        cell.classList.add('path');
+      }
+
+      // حط قطع حمرا في البيت الأحمر
+      if(i<2 && j>12) {
+        const p = document.createElement('div');
+        p.className = 'piece red';
+        cell.appendChild(p);
+      }
+
+      board.appendChild(cell);
     }
-    board.appendChild(cell);
   }
 }
 
 function rollDice() {
-  diceValue = Math.floor(Math.random() * 6) + 1;
-  document.getElementById('dice').innerText = diceValue;
-  
-  // لو جاب 6 يكسب لفة زيادة
-  if(diceValue == 6) {
-    alert('6! العب مرة تانية');
-  }
-  
-  // تجربة: بعد 10 لفات نطلع شاشة الفوز
-  if(Math.random() > 0.9) {
-    showWinner();
-  }
+  const val = Math.floor(Math.random() * 6) + 1;
+  document.getElementById('dice').innerText = val;
+  document.getElementById('rollBtn').innerText = 'ارمي تاني';
 }
 
-function showWinner() {
-  document.getElementById('winnerScreen').style.display = 'flex';
-  coins += 500;
-  document.getElementById('coins').innerText = coins;
-  
-  // هنا نعرض اعلان exe.io عشان ياخد العملات
-  // window.open('رابط_الاعلان_بتاعك', '_blank');
-}
+createBoard();
 </script>
 </body>
-  </html>
+</html>
