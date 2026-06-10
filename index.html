@@ -67,30 +67,13 @@
     font-weight: bold;
   }
   
-  /* الرقعة صورة طبق الأصل */
-  .board {
+  canvas {
+    border-radius: 18px;
     width: 94vw;
     max-width: 400px;
     height: 94vw;
     max-height: 400px;
-    margin: 0 auto 25px;
-    background: url('https://i.imgur.com/8QZ9XkL.png') center/cover no-repeat;
-    border-radius: 18px;
-    position: relative;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-  }
-  
-  /* القطعة الحمرا - نحطها فوق الصورة */
-  .piece {
-    position: absolute;
-    width: 6.5%;
-    height: 6.5%;
-    background: #dc2626;
-    border-radius: 50%;
-    border: 3px solid #7f1d1d;
-    top: 10.5%;
-    left: 10.5%;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
   }
   
   #dice {
@@ -98,14 +81,14 @@
     height: 90px;
     background: white;
     border-radius: 20px;
-    margin: 0 auto 15px;
+    margin: 20px auto 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 52px;
     color: #0f172a;
     font-weight: 900;
-    box-shadow: 0 8px 0 #cbd5e1, 0 12px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 0 #cbd5e1;
   }
   
   #roll {
@@ -138,19 +121,100 @@
 
 <div id="game">
   <div id="turn">دورك - الأحمر</div>
-  <div class="board">
-    <div class="piece"></div>
-  </div>
+  <canvas id="board"></canvas>
   <div id="dice">4</div>
   <button id="roll" onclick="rollDice()">ارمي الزهر</button>
 </div>
 
 <script>
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
 let coins = 266;
+
+// ظبط المقاس
+function resize() {
+  const size = Math.min(window.innerWidth * 0.94, 400);
+  canvas.width = size;
+  canvas.height = size;
+}
+resize();
+window.onresize = resize;
 
 function startGame() {
   document.getElementById('start').style.display = 'none';
   document.getElementById('game').style.display = 'block';
+  drawBoard();
+}
+
+function drawBoard() {
+  const size = canvas.width;
+  const cell = size / 15;
+  
+  // خلفية رمادي فاتح
+  ctx.fillStyle = '#e2e8f0';
+  ctx.fillRect(0, 0, size, size);
+  
+  // البيوت 4 الوان بزوايا مدورة
+  drawRounded(0, 0, cell*6, cell*6, 12, '#ef4444');
+  drawRounded(9*cell, 0, cell*6, cell*6, 12, '#3b82f6');
+  drawRounded(0, 9*cell, cell*6, cell*6, 12, '#f59e0b');
+  drawRounded(9*cell, 9*cell, cell*6, cell*6, 12, '#22c55e');
+  
+  // المسار الرمادي 3 مربعات في النص
+  ctx.fillStyle = '#cbd5e1';
+  ctx.fillRect(6*cell, 0, cell*3, 6*cell); // فوق
+  ctx.fillRect(6*cell, 9*cell, cell*3, 6*cell); // تحت
+  ctx.fillRect(0, 6*cell, 6*cell, cell*3); // شمال
+  ctx.fillRect(9*cell, 6*cell, 6*cell, cell*3); // يمين
+  
+  // المربعات البيضا + الخطوط
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1;
+  for(let i=0; i<15; i++) {
+    for(let j=0; j<15; j++) {
+      // ارسم المربع الابيض لو مش بيت ملون
+      if(!((i<6&&j<6) || (i<6&&j>8) || (i>8&&j<6) || (i>8&&j>8))) {
+        ctx.strokeRect(j*cell, i*cell, cell, cell);
+      }
+    }
+  }
+  
+  // المثلث النص 4 الوان
+  drawTri(6*cell, 6*cell, 7.5*cell, 7.5*cell, 6*cell, 7.5*cell, '#ef4444');
+  drawTri(6*cell, 6*cell, 7.5*cell, 7.5*cell, 7.5*cell, 6*cell, '#3b82f6');
+  drawTri(9*cell, 6*cell, 7.5*cell, 7.5*cell, 9*cell, 7.5*cell, '#22c55e');
+  drawTri(6*cell, 9*cell, 7.5*cell, 7.5*cell, 7.5*cell, 9*cell, '#f59e0b');
+  
+  // القطعة الحمرا في البيت
+  ctx.fillStyle = '#dc2626';
+  ctx.strokeStyle = '#7f1d1d';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(cell*1.5, cell*1.5, cell*0.6, 0, Math.PI*2);
+  ctx.fill();
+  ctx.stroke();
+}
+
+function drawRounded(x, y, w, h, r, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.fill();
+}
+
+function drawTri(x1,y1,x2,y2,x3,y3,color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.lineTo(x3,y3);
+  ctx.fill();
+  ctx.strokeStyle = '#6b7280';
+  ctx.stroke();
 }
 
 function rollDice() {
@@ -166,4 +230,4 @@ function watchAd() {
 }
 </script>
 </body>
-</html>
+  </html>
