@@ -4,7 +4,102 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ليدو مصر</title>
-<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    margin: 0;
+    background: #0a1428;
+    font-family: 'Cairo', sans-serif;
+    color: white;
+    text-align: center;
+  }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #061020;
+  }
+  .badge {
+    background: #1e293b;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  h1 {
+    font-size: 60px;
+    color: #fbbf24;
+    text-shadow: 0 5px 20px #000;
+    margin: 60px 0 40px;
+  }
+  .btn {
+    width: 85%;
+    max-width: 300px;
+    margin: 12px auto;
+    padding: 16px;
+    background: #22c55e;
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+    box-shadow: 0 4px 0 #16a34a;
+  }
+  .btn.blue { background: #3b82f6; box-shadow: 0 4px 0 #2563eb; }
+  .btn.ads { background: #f59e0b; box-shadow: 0 4px 0 #d97706; font-size: 18px; }
+  
+  #game { display: none; padding: 15px; }
+  #turn { font-size: 22px; margin: 15px 0; }
+  
+  #board {
+    border: 8px solid #0f172a;
+    border-radius: 20px;
+    background: #e2e8f0;
+    width: 95vw;
+    max-width: 450px;
+    height: 95vw;
+    max-height: 450px;
+  }
+  
+  #dice {
+    width: 90px;
+    height: 90px;
+    background: white;
+    border-radius: 18px;
+    margin: 20px auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: #0f172a;
+    font-weight: bold;
+    box-shadow: 0 6px 0 #cbd5e1;
+  }
+  
+  #roll {
+    padding: 14px 45px;
+    background: #f59e0b;
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  #winner {
+    display: none;
+    background: linear-gradient(180deg, #fbbf24, #f59e0b);
+    padding: 40px 30px;
+    border-radius: 25px;
+    color: #1e293b;
+    width: 85%;
+    max-width: 350px;
+    margin: 100px auto;
+  }
+  #winner h2 { font-size: 40px; }
+</style>
 </head>
 <body>
 
@@ -13,30 +108,33 @@
   <div class="badge">💰 <span id="coins">266</span></div>
 </div>
 
-<div id="start" class="screen active">
+<div id="start">
   <h1>LUDO</h1>
-  <button onclick="startGame(2)">2 اللاعبون</button>
-  <button onclick="startGame(4)">4 اللاعبون</button>
-  <button class="blue" onclick="startGame('bot')">العب ضد الكمبيوتر</button>
-  <button class="ads" onclick="watchAd()">شاهد اعلان +100 عملة</button>
+  <button class="btn" onclick="startGame()">2 اللاعبون</button>
+  <button class="btn" onclick="startGame()">4 اللاعبون</button>
+  <button class="btn blue" onclick="startGame()">العب ضد الكمبيوتر</button>
+  <button class="btn ads" onclick="watchAd()">شاهد اعلان +100 عملة</button>
 </div>
 
-<div id="game" class="screen">
+<div id="game">
   <p id="turn">دورك - الأحمر</p>
   <canvas id="board" width="450" height="450"></canvas>
   <div id="dice">2</div>
   <button id="roll" onclick="rollDice()">ارمي الزهر</button>
 </div>
 
-<div id="winner" class="screen">
-  <div class="win-box">
-    <h2>WINNER</h2>
-    <p>🏆 انت الفائز! 🏆</p>
-    <p>+500 عملة</p>
-    <button onclick="location.reload()">إعادة المباراة</button>
-  </div>
+<div id="winner">
+  <h2>WINNER</h2>
+  <p>🏆 انت الفائز! 🏆</p>
+  <p>+500 عملة</p>
+  <button class="btn" onclick="location.reload()">إعادة المباراة</button>
 </div>
 
-<script src="game.js"></script>
-</body>
-  </html>
+<script>
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
+let coins = 266;
+
+function startGame() {
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('game').style
