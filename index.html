@@ -20,15 +20,17 @@
   }
   .badge {
     background: #1e293b;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 25px;
     font-weight: bold;
+    font-size: 16px;
   }
   h1 {
     font-size: 60px;
     color: #fbbf24;
-    text-shadow: 0 5px 20px #000;
+    text-shadow: 0 6px 20px #000;
     margin: 50px 0 30px;
+    letter-spacing: 3px;
   }
   .btn {
     width: 85%;
@@ -49,15 +51,14 @@
   .btn.ads { background: #f59e0b; box-shadow: 0 4px 0 #d97706; font-size: 18px; }
   
   #game { display: none; padding: 10px; }
-  #turn { font-size: 22px; margin: 10px 0 15px; }
+  #turn { font-size: 22px; margin: 10px 0 15px; font-weight: bold; }
   
-  #board {
-    border-radius: 20px;
+  .board-wrap {
     width: 95vw;
     max-width: 420px;
-    height: 95vw;
-    max-height: 420px;
     margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
   
@@ -71,7 +72,7 @@
     align-items: center;
     justify-content: center;
     font-size: 48px;
-    color: #0f172a;
+    color: #1e293b;
     font-weight: bold;
     box-shadow: 0 6px 15px rgba(0,0,0,0.4);
   }
@@ -105,100 +106,43 @@
 
 <div id="game">
   <p id="turn">دورك - الأحمر</p>
-  <canvas id="board"></canvas>
-  <div id="dice">4</div>
-  <button id="roll" onclick="rollDice()">ارمي الزهر</button>
-</div>
-
-<script>
-const canvas = document.getElementById('board');
-const ctx = canvas.getContext('2d');
-let coins = 266;
-
-resizeCanvas();
-window.onresize = resizeCanvas;
-
-function resizeCanvas() {
-  const size = Math.min(window.innerWidth * 0.95, 420);
-  canvas.width = size;
-  canvas.height = size;
-}
-
-function startGame() {
-  document.getElementById('start').style.display = 'none';
-  document.getElementById('game').style.display = 'block';
-  drawBoard();
-}
-
-function drawBoard() {
-  const size = canvas.width;
-  const cell = size / 15;
   
-  // خلفية رمادي فاتح زي الصورة
-  ctx.fillStyle = '#d1d5db';
-  ctx.fillRect(0, 0, size, size);
-  
-  // رسم البيوت 4 الوان بزوايا مدورة
-  drawRoundedRect(0, 0, cell*6, cell*6, 15, '#ef4444'); // احمر
-  drawRoundedRect(9*cell, 0, cell*6, cell*6, 15, '#3b82f6'); // ازرق
-  drawRoundedRect(0, 9*cell, cell*6, cell*6, 15, '#eab308'); // اصفر
-  drawRoundedRect(9*cell, 9*cell, cell*6, cell*6, 15, '#22c55e'); // اخضر
-  
-  // المسار الابيض + المربعات
-  ctx.fillStyle = 'white';
-  ctx.strokeStyle = '#9ca3af';
-  ctx.lineWidth = 2;
-  
-  for(let i=0; i<15; i++) {
-    // العمود النص
-    if(i < 6 || i > 8) {
-      ctx.fillRect(6*cell, i*cell, cell, cell);
-      ctx.strokeRect(6*cell, i*cell, cell, cell);
-    }
-    // الصف النص
-    if(i < 6 || i > 8) {
-      ctx.fillRect(i*cell, 6*cell, cell, cell);
-      ctx.strokeRect(i*cell, 6*cell, cell, cell);
-    }
-  }
-  
-  // المثلثات الملونة في النص
-  drawTriangle(6*cell, 6*cell, 7*cell, 7*cell, 6*cell, 7*cell, '#ef4444');
-  drawTriangle(6*cell, 6*cell, 7*cell, 7*cell, 7*cell, 6*cell, '#3b82f6');
-  drawTriangle(8*cell, 6*cell, 7*cell, 7*cell, 8*cell, 7*cell, '#22c55e');
-  drawTriangle(6*cell, 8*cell, 7*cell, 7*cell, 7*cell, 8*cell, '#eab308');
-  
-  // قطعة حمرا في البيت
-  ctx.fillStyle = '#dc2626';
-  ctx.beginPath();
-  ctx.arc(cell*1.5, cell*1.5, cell*0.6, 0, Math.PI*2);
-  ctx.fill();
-  ctx.strokeStyle = '#7f1d1d';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-}
-
-function drawRoundedRect(x, y, w, h, r, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.fill();
-}
-
-function drawTriangle(x1,y1,x2,y2,x3,y3,color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(x1,y1);
-  ctx.lineTo(x2,y2);
-  ctx.lineTo(x3,y3);
-  ctx.fill();
-  ctx.strokeStyle = '#6b7280';
-  ctx.stroke();
-}
-
-function rollDice() {
-  const num = Math.floor(Math.random() * 6) + 1
+  <div class="board-wrap">
+    <svg viewBox="0 0 420 420">
+      <!-- خلفية رمادي -->
+      <rect width="420" height="420" fill="#d1d5db" rx="20"/>
+      
+      <!-- البيوت 4 الوان بزوايا مدورة -->
+      <rect x="20" y="20" width="160" height="160" fill="#ef4444" rx="15"/>
+      <rect x="240" y="20" width="160" height="160" fill="#3b82f6" rx="15"/>
+      <rect x="20" y="240" width="160" height="160" fill="#eab308" rx="15"/>
+      <rect x="240" y="240" width="160" height="160" fill="#22c55e" rx="15"/>
+      
+      <!-- المسار الابيض 3 مربعات عرض -->
+      <g fill="white" stroke="#9ca3af" stroke-width="2">
+        <!-- المسار الأفقي -->
+        <rect x="180" y="20" width="60" height="160"/>
+        <rect x="180" y="240" width="60" height="160"/>
+        <!-- المسار الرأسي -->
+        <rect x="20" y="180" width="160" height="60"/>
+        <rect x="240" y="180" width="160" height="60"/>
+      </g>
+      
+      <!-- المربعات البيضا بالخطوط -->
+      <g stroke="#d1d5db" stroke-width="1" fill="none">
+        <!-- خطوط المسار الرأسي -->
+        <line x1="200" y1="20" x2="200" y2="180"/>
+        <line x1="220" y1="20" x2="220" y2="180"/>
+        <line x1="200" y1="240" x2="200" y2="400"/>
+        <line x1="220" y1="240" x2="220" y2="400"/>
+        <!-- خطوط المسار الأفقي -->
+        <line x1="20" y1="200" x2="180" y2="200"/>
+        <line x1="20" y1="220" x2="180" y2="220"/>
+        <line x1="240" y1="200" x2="400" y2="200"/>
+        <line x1="240" y1="220" x2="400" y2="220"/>
+      </g>
+      
+      <!-- المثلث النص 4 الوان -->
+      <polygon points="180,180 210,210 180,210" fill="#ef4444"/>
+      <polygon points="180,180 210,210 210,180" fill="#3b82f6"/>
+      <polygon points="240,180 210,210 
