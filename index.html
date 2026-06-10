@@ -33,7 +33,7 @@
   }
   .btn {
     width: 85%;
-    max-width: 300px;
+    max-width: 320px;
     margin: 12px auto;
     padding: 16px;
     background: #22c55e;
@@ -50,7 +50,7 @@
   .btn.ads { background: #f59e0b; box-shadow: 0 4px 0 #d97706; font-size: 18px; }
   
   #game { display: none; padding: 15px; }
-  #turn { font-size: 22px; margin: 15px 0; }
+  #turn { font-size: 22px; margin: 15px 0; font-weight: bold; }
   
   #board {
     border: 8px solid #0f172a;
@@ -60,6 +60,7 @@
     max-width: 450px;
     height: 95vw;
     max-height: 450px;
+    margin: 0 auto;
   }
   
   #dice {
@@ -86,19 +87,8 @@
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 4px 0 #d97706;
   }
-  
-  #winner {
-    display: none;
-    background: linear-gradient(180deg, #fbbf24, #f59e0b);
-    padding: 40px 30px;
-    border-radius: 25px;
-    color: #1e293b;
-    width: 85%;
-    max-width: 350px;
-    margin: 100px auto;
-  }
-  #winner h2 { font-size: 40px; }
 </style>
 </head>
 <body>
@@ -118,22 +108,24 @@
 
 <div id="game">
   <p id="turn">دورك - الأحمر</p>
-  <canvas id="board" width="450" height="450"></canvas>
+  <canvas id="board"></canvas>
   <div id="dice">2</div>
   <button id="roll" onclick="rollDice()">ارمي الزهر</button>
-</div>
-
-<div id="winner">
-  <h2>WINNER</h2>
-  <p>🏆 انت الفائز! 🏆</p>
-  <p>+500 عملة</p>
-  <button class="btn" onclick="location.reload()">إعادة المباراة</button>
 </div>
 
 <script>
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 let coins = 266;
+
+// ظبط مقاس الكانفاس
+function resizeCanvas() {
+  const size = Math.min(window.innerWidth * 0.95, 450);
+  canvas.width = size;
+  canvas.height = size;
+}
+resizeCanvas();
+window.onresize = resizeCanvas;
 
 function startGame() {
   document.getElementById('start').style.display = 'none';
@@ -142,29 +134,32 @@ function startGame() {
 }
 
 function drawBoard() {
-  const size = 450;
+  const size = canvas.width;
   const cell = size / 15;
   
+  ctx.clearRect(0, 0, size, size);
   ctx.fillStyle = '#e2e8f0';
   ctx.fillRect(0, 0, size, size);
   
-  // 4 بيوت
-  ctx.fillStyle = '#ef4444';
-  ctx.fillRect(0, 0, cell*6, cell*6);
-  ctx.fillStyle = '#3b82f6';
-  ctx.fillRect(9*cell, 0, cell*6, cell*6);
-  ctx.fillStyle = '#eab308';
-  ctx.fillRect(0, 9*cell, cell*6, cell*6);
-  ctx.fillStyle = '#22c55e';
-  ctx.fillRect(9*cell, 9*cell, cell*6, cell*6);
+  // 4 بيوت ملونة
+  drawHome(0, 0, cell*6, '#ef4444'); // احمر
+  drawHome(9*cell, 0, cell*6, '#3b82f6'); // ازرق
+  drawHome(0, 9*cell, cell*6, '#eab308'); // اصفر
+  drawHome(9*cell, 9*cell, cell*6, '#22c55e'); // اخضر
   
   // المسار الابيض
   ctx.fillStyle = 'white';
   ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1;
+  
   for(let i=0; i<15; i++) {
-    if(i<6 || i>8) {
+    // العمود النص
+    if(i < 6 || i > 8) {
       ctx.fillRect(6*cell, i*cell, cell, cell);
       ctx.strokeRect(6*cell, i*cell, cell, cell);
+    }
+    // الصف النص
+    if(i < 6 || i > 8) {
       ctx.fillRect(i*cell, 6*cell, cell, cell);
       ctx.strokeRect(i*cell, 6*cell, cell, cell);
     }
@@ -178,34 +173,55 @@ function drawBoard() {
   ctx.lineTo(6*cell, 7*cell);
   ctx.fill();
   
-  // قطع حمرا
-  ctx.fillStyle = '#dc2626';
+  ctx.fillStyle = '#3b82f6';
   ctx.beginPath();
-  ctx.arc(cell*1.5, cell*1.5, cell*0.8, 0, Math.PI*2);
+  ctx.moveTo(7*cell, 7*cell);
+  ctx.lineTo(7*cell, 6*cell);
+  ctx.lineTo(8*cell, 7*cell);
   ctx.fill();
-  ctx.stroke();
+  
+  // دواير البداية + قطع حمرا
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = '#000';
+  for(let i=0; i<2; i++) {
+    for(let j=0; j<2; j++) {
+      let x = cell*1.5 + i*cell*2;
+      let y = cell*1.5 + j*cell*2;
+      ctx.beginPath();
+      ctx.arc(x, y, cell*0.7, 0, Math.PI*2);
+      ctx.fill();
+      ctx.stroke();
+      
+      // قطعة حمرا
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(x, y, cell*0.5, 0, Math.PI*2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = 'white';
+    }
+  }
+}
+
+function drawHome(x, y, size, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, size, size);
 }
 
 function rollDice() {
   const num = Math.floor(Math.random() * 6) + 1;
   document.getElementById('dice').innerText = num;
-  
-  if(num == 6 && Math.random() > 0.7) {
-    document.getElementById('game').style.display = 'none';
-    document.getElementById('winner').style.display = 'block';
-    coins += 500;
-    document.getElementById('coins').innerText = coins;
-  }
+  alert('طلع رقم: ' + num + ' - الحركة لسه هضيفها بعدين');
 }
 
 function watchAd() {
-  window.open('https://exe.io/رابط_اعلانك', '_blank');
+  window.open('https://exe.io/حط_رابطك_هنا', '_blank');
   setTimeout(() => {
     coins += 100;
     document.getElementById('coins').innerText = coins;
-    alert('تم! +100 عملة');
+    alert('مبروك +100 عملة!');
   }, 3000);
 }
 </script>
 </body>
-  </html>
+</html>
