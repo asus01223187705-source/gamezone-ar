@@ -23,13 +23,12 @@
     padding: 8px 16px;
     border-radius: 25px;
     font-weight: bold;
-    font-size: 16px;
   }
   h1 {
     font-size: 60px;
     color: #fbbf24;
     text-shadow: 0 5px 20px #000;
-    margin: 60px 0 40px;
+    margin: 50px 0 30px;
   }
   .btn {
     width: 85%;
@@ -49,33 +48,32 @@
   .btn.blue { background: #3b82f6; box-shadow: 0 4px 0 #2563eb; }
   .btn.ads { background: #f59e0b; box-shadow: 0 4px 0 #d97706; font-size: 18px; }
   
-  #game { display: none; padding: 15px; }
-  #turn { font-size: 22px; margin: 15px 0; font-weight: bold; }
+  #game { display: none; padding: 10px; }
+  #turn { font-size: 22px; margin: 10px 0 15px; }
   
   #board {
-    border: 8px solid #0f172a;
     border-radius: 20px;
-    background: #e2e8f0;
     width: 95vw;
-    max-width: 450px;
+    max-width: 420px;
     height: 95vw;
-    max-height: 450px;
+    max-height: 420px;
     margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
   
   #dice {
-    width: 90px;
-    height: 90px;
+    width: 85px;
+    height: 85px;
     background: white;
     border-radius: 18px;
-    margin: 20px auto 10px;
+    margin: 15px auto 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
+    font-size: 48px;
     color: #0f172a;
     font-weight: bold;
-    box-shadow: 0 6px 0 #cbd5e1;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
   }
   
   #roll {
@@ -87,15 +85,14 @@
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 0 #d97706;
   }
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <div class="badge">⭐ 72</div>
   <div class="badge">💰 <span id="coins">266</span></div>
+  <div class="badge">⭐ 72</div>
 </div>
 
 <div id="start">
@@ -109,7 +106,7 @@
 <div id="game">
   <p id="turn">دورك - الأحمر</p>
   <canvas id="board"></canvas>
-  <div id="dice">2</div>
+  <div id="dice">4</div>
   <button id="roll" onclick="rollDice()">ارمي الزهر</button>
 </div>
 
@@ -118,14 +115,14 @@ const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 let coins = 266;
 
-// ظبط مقاس الكانفاس
+resizeCanvas();
+window.onresize = resizeCanvas;
+
 function resizeCanvas() {
-  const size = Math.min(window.innerWidth * 0.95, 450);
+  const size = Math.min(window.innerWidth * 0.95, 420);
   canvas.width = size;
   canvas.height = size;
 }
-resizeCanvas();
-window.onresize = resizeCanvas;
 
 function startGame() {
   document.getElementById('start').style.display = 'none';
@@ -137,20 +134,20 @@ function drawBoard() {
   const size = canvas.width;
   const cell = size / 15;
   
-  ctx.clearRect(0, 0, size, size);
-  ctx.fillStyle = '#e2e8f0';
+  // خلفية رمادي فاتح زي الصورة
+  ctx.fillStyle = '#d1d5db';
   ctx.fillRect(0, 0, size, size);
   
-  // 4 بيوت ملونة
-  drawHome(0, 0, cell*6, '#ef4444'); // احمر
-  drawHome(9*cell, 0, cell*6, '#3b82f6'); // ازرق
-  drawHome(0, 9*cell, cell*6, '#eab308'); // اصفر
-  drawHome(9*cell, 9*cell, cell*6, '#22c55e'); // اخضر
+  // رسم البيوت 4 الوان بزوايا مدورة
+  drawRoundedRect(0, 0, cell*6, cell*6, 15, '#ef4444'); // احمر
+  drawRoundedRect(9*cell, 0, cell*6, cell*6, 15, '#3b82f6'); // ازرق
+  drawRoundedRect(0, 9*cell, cell*6, cell*6, 15, '#eab308'); // اصفر
+  drawRoundedRect(9*cell, 9*cell, cell*6, cell*6, 15, '#22c55e'); // اخضر
   
-  // المسار الابيض
+  // المسار الابيض + المربعات
   ctx.fillStyle = 'white';
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 2;
   
   for(let i=0; i<15; i++) {
     // العمود النص
@@ -165,63 +162,43 @@ function drawBoard() {
     }
   }
   
-  // المثلث النص
-  ctx.fillStyle = '#ef4444';
-  ctx.beginPath();
-  ctx.moveTo(7*cell, 7*cell);
-  ctx.lineTo(7*cell, 6*cell);
-  ctx.lineTo(6*cell, 7*cell);
-  ctx.fill();
+  // المثلثات الملونة في النص
+  drawTriangle(6*cell, 6*cell, 7*cell, 7*cell, 6*cell, 7*cell, '#ef4444');
+  drawTriangle(6*cell, 6*cell, 7*cell, 7*cell, 7*cell, 6*cell, '#3b82f6');
+  drawTriangle(8*cell, 6*cell, 7*cell, 7*cell, 8*cell, 7*cell, '#22c55e');
+  drawTriangle(6*cell, 8*cell, 7*cell, 7*cell, 7*cell, 8*cell, '#eab308');
   
-  ctx.fillStyle = '#3b82f6';
+  // قطعة حمرا في البيت
+  ctx.fillStyle = '#dc2626';
   ctx.beginPath();
-  ctx.moveTo(7*cell, 7*cell);
-  ctx.lineTo(7*cell, 6*cell);
-  ctx.lineTo(8*cell, 7*cell);
+  ctx.arc(cell*1.5, cell*1.5, cell*0.6, 0, Math.PI*2);
   ctx.fill();
-  
-  // دواير البداية + قطع حمرا
-  ctx.fillStyle = 'white';
-  ctx.strokeStyle = '#000';
-  for(let i=0; i<2; i++) {
-    for(let j=0; j<2; j++) {
-      let x = cell*1.5 + i*cell*2;
-      let y = cell*1.5 + j*cell*2;
-      ctx.beginPath();
-      ctx.arc(x, y, cell*0.7, 0, Math.PI*2);
-      ctx.fill();
-      ctx.stroke();
-      
-      // قطعة حمرا
-      ctx.fillStyle = '#dc2626';
-      ctx.beginPath();
-      ctx.arc(x, y, cell*0.5, 0, Math.PI*2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = 'white';
-    }
-  }
+  ctx.strokeStyle = '#7f1d1d';
+  ctx.lineWidth = 3;
+  ctx.stroke();
 }
 
-function drawHome(x, y, size, color) {
+function drawRoundedRect(x, y, w, h, r, color) {
   ctx.fillStyle = color;
-  ctx.fillRect(x, y, size, size);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.fill();
+}
+
+function drawTriangle(x1,y1,x2,y2,x3,y3,color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.lineTo(x3,y3);
+  ctx.fill();
+  ctx.strokeStyle = '#6b7280';
+  ctx.stroke();
 }
 
 function rollDice() {
-  const num = Math.floor(Math.random() * 6) + 1;
-  document.getElementById('dice').innerText = num;
-  alert('طلع رقم: ' + num + ' - الحركة لسه هضيفها بعدين');
-}
-
-function watchAd() {
-  window.open('https://exe.io/حط_رابطك_هنا', '_blank');
-  setTimeout(() => {
-    coins += 100;
-    document.getElementById('coins').innerText = coins;
-    alert('مبروك +100 عملة!');
-  }, 3000);
-}
-</script>
-</body>
-</html>
+  const num = Math.floor(Math.random() * 6) + 1
