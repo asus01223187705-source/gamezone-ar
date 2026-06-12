@@ -2,86 +2,96 @@
 <html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>سباق متوسكل</title>
+<title>Bike Bridge</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <style>
-body{margin:0;background:#87CEEB;overflow:hidden;font-family:tahoma}
-canvas{display:block;background:linear-gradient(#87CEEB 0%,#87CEEB 60%,#228B22 60%)}
-#controls{position:fixed;bottom:20px;width:100%;display:flex;justify-content:space-between;padding:0 30px}
-.btn{width:80px;height:80px;border-radius:50%;background:#ff5722;color:white;border:none;font-size:30px;opacity:0.7}
-#speed{position:fixed;top:10px;right:10px;color:white;font-size:20px;background:rgba(0,0,0,0.5);padding:5px 15px;border-radius:10px}
+body{margin:0;background:#4fc3f7;overflow:hidden}
+canvas{display:block}
+#btns{position:fixed;bottom:20px;right:20px;display:grid;gap:10px}
+.btn{width:70px;height:70px;border-radius:50%;border:none;font-size:24px;color:white;opacity:0.8}
+#gas{background:#4caf50} #brake{background:#f44336} #jump{background:#ff9800}
+#pos{position:fixed;top:10px;left:10px;color:white;background:rgba(0,0,0,0.6);padding:8px 15px;border-radius:8px;font-size:18px}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
-<div id="speed">السرعة: 0</div>
-<div id="controls">
-  <button class="btn" ontouchstart="brake=true" ontouchend="brake=false">⏪</button>
-  <button class="btn" ontouchstart="gas=true" ontouchend="gas=false">⏩</button>
+<canvas id="c"></canvas>
+<div id="pos">المركز: 4th</div>
+<div id="btns">
+  <button id="jump" class="btn" ontouchstart="jump=true" ontouchend="jump=false">↑</button>
+  <button id="gas" class="btn" ontouchstart="gas=true" ontouchend="gas=false">⏩</button>
+  <button id="brake" class="btn" ontouchstart="brake=true" ontouchend="brake=false">⏪</button>
 </div>
 
 <script>
-let canvas = document.getElementById('game');
-let ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let c=document.getElementById('c'), ctx=c.getContext('2d');
+c.width=innerWidth; c.height=innerHeight;
 
-let player = {x:100, y:200, speed:0, angle:0};
-let gas = false, brake = false;
-let enemies = [{x:150,s:2},{x:200,s:2.5},{x:250,s:1.8}];
+let player={x:100,y:300,speed:0,vy:0,onGround:true};
+let gas=false, brake=false, jump=false;
+let cam=0;
+let rivals=[{x:300,s:3},{x:450,s:3.5},{x:600,s:2.8}];
 
-function drawHill(x){
-  ctx.beginPath();
-  ctx.moveTo(x, canvas.height*0.6);
-  ctx.quadraticCurveTo(x+100, canvas.height*0.6-50, x+200, canvas.height*0.6);
-  ctx.lineTo(x+200, canvas.height);
-  ctx.lineTo(x, canvas.height);
-  ctx.fillStyle = '#2e7d32';
-  ctx.fill();
+// نرسم كوبري خشب
+function drawBridge(x){
+  ctx.fillStyle='#8B4513';
+  ctx.fillRect(x-cam, 350, 200, 20);
+  for(let i=0;i<10;i++) ctx.fillRect(x+20*i-cam, 330, 5, 40);
 }
 
-function gameLoop(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function loop(){
+  ctx.clearRect(0,0,c.width,c.height);
   
-  // نرسم التلال
-  for(let i=-1;i<5;i++) drawHill(i*200 - player.x%200);
+  // سماء وبحر
+  ctx.fillStyle='#4fc3f7'; ctx.fillRect(0,0,c.width,350);
+  ctx.fillStyle='#0277bd'; ctx.fillRect(0,370,c.width,c.height);
   
-  // تحكم اللاعب
-  if(gas) player.speed += 0.3;
-  if(brake) player.speed -= 0.5;
-  player.speed *= 0.98; // احتكاك
-  if(player.speed<0) player.speed=0;
-  if(player.speed>12) player.speed=12;
+  // تحكم
+  if(gas) player.speed+=0.4;
+  if(brake) player.speed-=0.6;
+  if(jump && player.onGround){player.vy=-12; player.onGround=false;}
   
-  player.x += player.speed;
+  player.speed*=0.95;
+  player.vy+=0.6; // جاذبية
+  player.y+=player.vy;
   
-  // نرسم اللاعب
-  ctx.fillStyle = 'red';
-  ctx.fillRect(canvas.width/2-15, canvas.height*0.6-30, 30, 20);
+  if(player.y>330){player.y=330; player.vy=0; player.onGround=true;}
+  
+  player.x+=player.speed;
+  cam=player.x-150;
+  
+  // نرسم 3 كباري ورا بعض
+  for(let i=0;i<5;i++) drawBridge(i*250);
+  
+  // اللاعب
+  ctx.fillStyle='#ffeb3b';
+  ctx.fillRect(150, player.y-25, 40, 15); // جسم
   ctx.beginPath();
-  ctx.arc(canvas.width/2-10, canvas.height*0.6, 8, 0, Math.PI*2);
-  ctx.arc(canvas.width/2+10, canvas.height*0.6, 8, 0, Math.PI*2);
-  ctx.fill();
+  ctx.arc(155, player.y+5, 8, 0, 6.28);
+  ctx.arc(185, player.y+5, 8, 0, 6.28);
+  ctx.fillStyle='black'; ctx.fill();
   
-  // نرسم الخصوم
-  ctx.fillStyle = 'blue';
-  enemies.forEach(e=>{
-    e.x += e.s;
-    let ex = e.x - player.x + canvas.width/2;
-    if(ex>-50 && ex<canvas.width+50){
-      ctx.fillRect(ex-15, canvas.height*0.6-30, 30, 20);
+  // الخصوم
+  ctx.fillStyle='#e91e63';
+  rivals.forEach(r=>{
+    r.x+=r.s;
+    let rx=r.x-cam;
+    if(rx>-50 && rx<c.width+50){
+      ctx.fillRect(rx, 325, 40, 15);
       ctx.beginPath();
-      ctx.arc(ex-10, canvas.height*0.6, 8, 0, Math.PI*2);
-      ctx.arc(ex+10, canvas.height*0.6, 8, 0, Math.PI*2);
+      ctx.arc(rx+5, 340, 8, 0, 6.28);
+      ctx.arc(rx+35, 340, 8, 0, 6.28);
       ctx.fill();
     }
   });
   
-  document.getElementById('speed').innerText = 'السرعة: ' + Math.floor(player.speed*10);
+  // المركز
+  let rank=1;
+  rivals.forEach(r=>{if(r.x>player.x) rank++});
+  document.getElementById('pos').innerText='المركز: '+rank+'th';
   
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(loop);
 }
-gameLoop();
+loop();
 </script>
 </body>
 </html>
