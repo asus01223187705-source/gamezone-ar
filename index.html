@@ -1,233 +1,47 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ليدو مصر</title>
+<title>ليدو كاملة</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <style>
-  body {
-    margin: 0;
-    background: #0f172a;
-    font-family: 'Cairo', sans-serif;
-    color: white;
-    text-align: center;
-  }
-  .top {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 20px;
-  }
-  .badge {
-    background: #1e293b;
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 17px;
-  }
-  
-  #start h1 {
-    font-size: 70px;
-    color: #fbbf24;
-    text-shadow: 0 0 30px rgba(251,191,36,0.5);
-    margin: 60px 0 40px;
-    font-weight: 900;
-  }
-  
-  .btn {
-    width: 88%;
-    max-width: 330px;
-    margin: 12px auto;
-    padding: 18px;
-    border: none;
-    border-radius: 16px;
-    color: white;
-    font-size: 23px;
-    font-weight: bold;
-    cursor: pointer;
-    display: block;
-  }
-  .btn.green {
-    background: linear-gradient(180deg, #10b981, #059669);
-    box-shadow: 0 6px 0 #047857;
-  }
-  .btn.blue {
-    background: linear-gradient(180deg, #3b82f6, #2563eb);
-    box-shadow: 0 6px 0 #1d4ed8;
-  }
-  .btn.orange {
-    background: linear-gradient(180deg, #f97316, #ea580c);
-    box-shadow: 0 6px 0 #c2410c;
-    font-size: 19px;
-  }
-  
-  #game { display: none; }
-  #turn {
-    font-size: 24px;
-    margin: 20px 0;
-    font-weight: bold;
-  }
-  
-  canvas {
-    border-radius: 18px;
-    width: 94vw;
-    max-width: 400px;
-    height: 94vw;
-    max-height: 400px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-  }
-  
-  #dice {
-    width: 90px;
-    height: 90px;
-    background: white;
-    border-radius: 20px;
-    margin: 20px auto 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 52px;
-    color: #0f172a;
-    font-weight: 900;
-    box-shadow: 0 8px 0 #cbd5e1;
-  }
-  
-  #roll {
-    padding: 16px 50px;
-    background: linear-gradient(180deg, #f97316, #ea580c);
-    border: none;
-    border-radius: 16px;
-    color: white;
-    font-size: 21px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 6px 0 #c2410c;
-  }
+body{background:#0d3d0d;text-align:center;font-family:tahoma;margin:0;padding:5px}
+h1{color:#ffd700;margin:5px;font-size:20px}
+#board{width:340px;height:340px;background:#4caf50;margin:10px auto;border:8px solid #ffd700;position:relative;border-radius:10px}
+.cell{width:20px;height:20px;position:absolute;border:1px solid #388e3c;background:#66bb6a}
+.piece{width:16px;height:16px;border-radius:50%;position:absolute;border:2px solid white;cursor:pointer;z-index:5;transition:0.3s}
+.red{background:#e53935;left:30px;top:30px}
+.blue{background:#1e88e5;left:290px;top:30px}
+button{padding:12px 30px;font-size:18px;background:#ff5722;color:white;border:none;border-radius:10px;margin:5px;cursor:pointer}
+#dice{font-size:50px;color:#ffd700;margin:5px}
+#msg{color:white;font-size:14px;height:20px}
 </style>
 </head>
 <body>
-
-<div class="top">
-  <div class="badge">💰 <span id="coins">266</span></div>
-  <div class="badge">⭐ 72</div>
-</div>
-
-<div id="start">
-  <h1>LUDO</h1>
-  <button class="btn green" onclick="startGame()">2 اللاعبون</button>
-  <button class="btn green" onclick="startGame()">4 اللاعبون</button>
-  <button class="btn blue" onclick="startGame()">العب ضد الكمبيوتر</button>
-  <button class="btn orange" onclick="watchAd()">شاهد اعلان +100 عملة</button>
-</div>
-
-<div id="game">
-  <div id="turn">دورك - الأحمر</div>
-  <canvas id="board"></canvas>
-  <div id="dice">4</div>
-  <button id="roll" onclick="rollDice()">ارمي الزهر</button>
-</div>
+<h1>ليدو 🎲</h1>
+<div id="board"></div>
+<div id="dice">🎲</div>
+<div id="msg">دوس ارمي الزهر</div>
+<button onclick="roll()">ارمي الزهر</button>
 
 <script>
-const canvas = document.getElementById('board');
-const ctx = canvas.getContext('2d');
-let coins = 266;
+let dice = 0;
+let redPos = -1; // -1 يعني في البيت
+let bluePos = -1;
 
-// ظبط المقاس
-function resize() {
-  const size = Math.min(window.innerWidth * 0.94, 400);
-  canvas.width = size;
-  canvas.height = size;
-}
-resize();
-window.onresize = resize;
-
-function startGame() {
-  document.getElementById('start').style.display = 'none';
-  document.getElementById('game').style.display = 'block';
-  drawBoard();
+// نرسم 40 مربع مسار دائري
+const board = document.getElementById('board');
+for(let i=0;i<40;i++){
+  let cell = document.createElement('div');
+  cell.className = 'cell';
+  let angle = (i/40) * Math.PI * 2;
+  let x = 160 + Math.cos(angle) * 140;
+  let y = 160 + Math.sin(angle) * 140;
+  cell.style.left = (x-10) + 'px';
+  cell.style.top = (y-10) + 'px';
+  board.appendChild(cell);
 }
 
-function drawBoard() {
-  const size = canvas.width;
-  const cell = size / 15;
-  
-  // خلفية رمادي فاتح
-  ctx.fillStyle = '#e2e8f0';
-  ctx.fillRect(0, 0, size, size);
-  
-  // البيوت 4 الوان بزوايا مدورة
-  drawRounded(0, 0, cell*6, cell*6, 12, '#ef4444');
-  drawRounded(9*cell, 0, cell*6, cell*6, 12, '#3b82f6');
-  drawRounded(0, 9*cell, cell*6, cell*6, 12, '#f59e0b');
-  drawRounded(9*cell, 9*cell, cell*6, cell*6, 12, '#22c55e');
-  
-  // المسار الرمادي 3 مربعات في النص
-  ctx.fillStyle = '#cbd5e1';
-  ctx.fillRect(6*cell, 0, cell*3, 6*cell); // فوق
-  ctx.fillRect(6*cell, 9*cell, cell*3, 6*cell); // تحت
-  ctx.fillRect(0, 6*cell, 6*cell, cell*3); // شمال
-  ctx.fillRect(9*cell, 6*cell, 6*cell, cell*3); // يمين
-  
-  // المربعات البيضا + الخطوط
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1;
-  for(let i=0; i<15; i++) {
-    for(let j=0; j<15; j++) {
-      // ارسم المربع الابيض لو مش بيت ملون
-      if(!((i<6&&j<6) || (i<6&&j>8) || (i>8&&j<6) || (i>8&&j>8))) {
-        ctx.strokeRect(j*cell, i*cell, cell, cell);
-      }
-    }
-  }
-  
-  // المثلث النص 4 الوان
-  drawTri(6*cell, 6*cell, 7.5*cell, 7.5*cell, 6*cell, 7.5*cell, '#ef4444');
-  drawTri(6*cell, 6*cell, 7.5*cell, 7.5*cell, 7.5*cell, 6*cell, '#3b82f6');
-  drawTri(9*cell, 6*cell, 7.5*cell, 7.5*cell, 9*cell, 7.5*cell, '#22c55e');
-  drawTri(6*cell, 9*cell, 7.5*cell, 7.5*cell, 7.5*cell, 9*cell, '#f59e0b');
-  
-  // القطعة الحمرا في البيت
-  ctx.fillStyle = '#dc2626';
-  ctx.strokeStyle = '#7f1d1d';
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.arc(cell*1.5, cell*1.5, cell*0.6, 0, Math.PI*2);
-  ctx.fill();
-  ctx.stroke();
-}
-
-function drawRounded(x, y, w, h, r, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+w, y, x+w, y+h, r);
-  ctx.arcTo(x+w, y+h, x, y+h, r);
-  ctx.arcTo(x, y+h, x, y, r);
-  ctx.arcTo(x, y, x+w, y, r);
-  ctx.fill();
-}
-
-function drawTri(x1,y1,x2,y2,x3,y3,color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(x1,y1);
-  ctx.lineTo(x2,y2);
-  ctx.lineTo(x3,y3);
-  ctx.fill();
-  ctx.strokeStyle = '#6b7280';
-  ctx.stroke();
-}
-
-function rollDice() {
-  document.getElementById('dice').innerText = Math.floor(Math.random() * 6) + 1;
-}
-
-function watchAd() {
-  window.open('https://exe.io/حط_رابطك', '_blank');
-  setTimeout(() => {
-    coins += 100;
-    document.getElementById('coins').innerText = coins;
-  }, 3000);
-}
-</script>
-</body>
-  </html>
+function roll(){
+  dice = Math.floor(Math.random()*6)+1;
+ 
